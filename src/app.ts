@@ -3,6 +3,7 @@ import cors from 'cors';
 import { StudentRoutes } from './app/modules/student/student.route';
 import { UserRoutes } from './app/modules/user/user.route';
 import globalErrorHandler from './app/middlwares/globalErrorHandler';
+import notFound from './app/middlwares/notFound';
 
 const app = express();
 
@@ -19,14 +20,6 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Startup Server Running!');
 });
 
-//route get errpr
-app.all('*', (req: Request, res: Response) => {
-  res.status(404).json({
-    success: false,
-    message: 'Route Not Found',
-  });
-});
-
 //global error handler
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
   if (error) {
@@ -38,5 +31,6 @@ app.use((error: any, req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use(globalErrorHandler);
+app.use(notFound);
 
 export default app;
