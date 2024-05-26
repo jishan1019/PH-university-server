@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import argon2 from 'argon2';
+
 import {
   TGuardian,
   TLocalGuardian,
@@ -10,7 +10,6 @@ import {
 const userNameSchema = new Schema<TUserName>({
   firstName: {
     type: String,
-    maxlength: [20, "First name can't be moe then 20"],
     trim: true,
     required: [true, 'First Name is required'],
   },
@@ -62,7 +61,12 @@ const studentSchema = new Schema<TStudent>(
       required: [true, 'Student ID is required'],
       unique: true,
     },
-    password: { type: String, required: true },
+    user: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'User ID is required'],
+      unique: true,
+      ref: 'User',
+    },
     name: {
       type: userNameSchema,
       required: [true, 'Student Name is required'],
@@ -113,15 +117,6 @@ const studentSchema = new Schema<TStudent>(
       required: [true, 'Local Guardian details are required'],
     },
     profileImg: { type: String },
-    isActive: {
-      type: String,
-      enum: {
-        values: ['active', 'blocked'],
-        message: '{VALUE} is not a valid status',
-      },
-      default: 'active',
-      required: [true, 'Status is required'],
-    },
     isDeleted: {
       type: Boolean,
       default: false,
@@ -133,25 +128,6 @@ const studentSchema = new Schema<TStudent>(
     },
   },
 );
-
-//pre save middleware // work on save function
-studentSchema.pre('save', async function (next) {
-  try {
-    const user = this;
-    const hash = await argon2.hash(user.password);
-    user.password = hash;
-
-    next();
-  } catch (err) {
-    console.log(err);
-  }
-});
-
-//post middleware
-studentSchema.post('save', function (user, next) {
-  user.password = '';
-  next();
-});
 
 //query middeware
 studentSchema.pre('find', async function (next) {

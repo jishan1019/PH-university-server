@@ -1,6 +1,8 @@
 import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import { StudentRoutes } from './app/modules/student/student.route';
+import { UserRoutes } from './app/modules/user/user.route';
+import globalErrorHandler from './app/middlwares/globalErrorHandler';
 
 const app = express();
 
@@ -11,6 +13,7 @@ app.use(cors());
 
 //Application Routes
 app.use('/api/v1/students', StudentRoutes);
+app.use('/api/v1/users', UserRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Startup Server Running!');
@@ -33,5 +36,7 @@ app.use((error: any, req: Request, res: Response, next: NextFunction) => {
     });
   }
 });
+
+app.use(globalErrorHandler);
 
 export default app;

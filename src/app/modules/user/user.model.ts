@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { TUser } from './user.interface';
+import argon2 from 'argon2';
 
 const userSchema = new Schema<TUser>(
   {
@@ -7,13 +8,36 @@ const userSchema = new Schema<TUser>(
     password: { type: String, required: true },
     needsPasswordChange: { type: Boolean, default: true },
     role: { type: String, enum: ['admin', 'student', 'faculty'] },
-    status: { type: String, enum: ['in-progress', 'blocked'] },
+    status: {
+      type: String,
+      enum: ['in-progress', 'blocked'],
+      default: 'in-progress',
+    },
     isDeleted: { type: Boolean, default: false },
   },
   {
     timestamps: true,
   },
 );
+
+//pre save middleware // work on save function
+userSchema.pre('save', async function (next) {
+  try {
+    const user = this;
+    const hash = await argon2.hash(user.password);
+    user.password = hash;
+
+    next();
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+//post middleware
+userSchema.post('save', function (user, next) {
+  user.password = '';
+  next();
+});
 
 const UserModel = model<TUser>('User', userSchema);
 
