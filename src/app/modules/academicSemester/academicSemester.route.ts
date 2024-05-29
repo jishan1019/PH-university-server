@@ -5,6 +5,13 @@ import { academicValidationSchema } from './academicSemester.validation';
 
 const router = express.Router();
 
+router.get('/', AcademicSemesterController.getAllAcademicSemester);
+
+router.get(
+  '/:semesterId',
+  AcademicSemesterController.getSingleAcademicSemester,
+);
+
 router.post(
   '/',
   validateRequest(academicValidationSchema),
