@@ -4,7 +4,6 @@ import {
   academicSemesterMonth,
   academicSemesterName,
 } from './academicSemester.constant';
-import { TAcademicSemesterName } from './academicSemester.interface';
 
 const academicValidationSchema = z.object({
   body: z.object({
@@ -16,4 +15,18 @@ const academicValidationSchema = z.object({
   }),
 });
 
-export { academicValidationSchema };
+const academicValidationUpdateSchema = z.object({
+  body: z.object({
+    name: z.enum([...academicSemesterName] as [string, ...string[]]).optional(),
+    code: z.enum([...academicSemesterCode] as [string, ...string[]]).optional(),
+    year: z.string(),
+    startMonth: z
+      .enum([...academicSemesterMonth] as [string, ...string[]])
+      .optional(),
+    endMonth: z
+      .enum([...academicSemesterMonth] as [string, ...string[]])
+      .optional(),
+  }),
+});
+
+export { academicValidationSchema, academicValidationUpdateSchema };
