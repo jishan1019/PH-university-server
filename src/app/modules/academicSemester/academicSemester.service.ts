@@ -1,12 +1,11 @@
-import { TAcademicSemester } from './academicSemester.interface';
+import {
+  TAcademicSemester,
+  TAcademicSemesterNameCodeMapper,
+} from './academicSemester.interface';
 import { AcademicSemesterModel } from './academicSemester.model';
 
 const createAcademicSemesterIntoDb = async (payload: TAcademicSemester) => {
   //semester name ---> semester code
-
-  type TAcademicSemesterNameCodeMapper = {
-    [key: string]: string;
-  };
 
   const academicSemesterNameCodeMapper: TAcademicSemesterNameCodeMapper = {
     Autumn: '01',
