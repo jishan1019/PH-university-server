@@ -17,7 +17,7 @@ const createStudentIntoDb = async (password: string, payload: TStudent) => {
 
   userUser.password = password || (config.default_pass as string);
   userUser.role = 'student';
-  userUser.id = generateStudentId(admissionSemester);
+  userUser.id = await generateStudentId(admissionSemester as TAcademicSemester);
 
   const newUser = await UserModel.create(userUser);
 
