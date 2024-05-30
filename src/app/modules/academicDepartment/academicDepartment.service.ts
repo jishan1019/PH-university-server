@@ -12,14 +12,6 @@ const getSingleAcademicDepartmentFromDb = async (id: string) => {
 };
 
 const createAcademicDepartmentIntoDb = async (payload: TAcademicDepartment) => {
-  const isExistDepartment = await AcademicDepartmentModel.findOne({
-    name: payload.name,
-  });
-
-  if (isExistDepartment) {
-    throw new Error('Academic Department already exists');
-  }
-
   const result = await AcademicDepartmentModel.create(payload);
   return result;
 };
