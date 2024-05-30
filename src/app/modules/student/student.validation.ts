@@ -64,4 +64,95 @@ const studentValidationSchema = z.object({
   }),
 });
 
-export { studentValidationSchema };
+const userNameValidationUpdateSchema = z.object({
+  firstName: z
+    .string()
+    .max(20, { message: 'First name cannot exceed 20 characters' })
+    .optional(),
+  middleName: z.string().optional(),
+  lastName: z.string().min(1, { message: 'Last name is required' }).optional(),
+});
+
+const guardianValidationUpdateSchema = z.object({
+  fatherName: z
+    .string()
+    .trim()
+    .min(1, { message: 'Father name is required' })
+    .optional(),
+  fatherOccupation: z
+    .string()
+    .min(1, { message: 'Father occupation is required' })
+    .optional(),
+  fatherContactNo: z
+    .string()
+    .min(1, { message: 'Father contact number is required' }),
+  motherName: z
+    .string()
+    .trim()
+    .min(1, { message: 'Mother name is required' })
+    .optional(),
+  motherOccupation: z
+    .string()
+    .min(1, { message: 'Mother occupation is required' })
+    .optional(),
+  motherContactNo: z
+    .string()
+    .min(1, { message: 'Mother contact number is required' })
+    .optional(),
+});
+
+const localGuardianValidationUpdateSchema = z.object({
+  name: z
+    .string()
+    .min(1, { message: 'Local guardian name is required' })
+    .optional(),
+  occupation: z
+    .string()
+    .min(1, { message: 'Local guardian occupation is required' }),
+  address: z
+    .string()
+    .min(1, { message: 'Local guardian address is required' })
+    .optional(),
+  contactNo: z
+    .string()
+    .min(1, { message: 'Local guardian contact number is required' })
+    .optional(),
+});
+
+// Main Student schema
+const studentValidationUpdateSchema = z.object({
+  body: z.object({
+    password: z.string().max(20).optional(),
+    student: z.object({
+      name: userNameValidationUpdateSchema,
+      gender: z.enum(['male', 'female']).optional(),
+      dateOfBirth: z.string().optional(),
+      email: z.string().email({ message: 'Invalid email address' }).optional(),
+      contactNo: z
+        .string()
+        .min(1, { message: 'Contact number is required' })
+        .optional(),
+      emergencyContactNo: z
+        .string()
+        .min(1, { message: 'Emergency contact number is required' })
+        .optional(),
+      bloodGroup: z
+        .enum(['A+', 'A-', 'AB+', 'AB-', 'B+', 'B-', 'O+', 'O-'])
+        .optional(),
+      presentAddress: z
+        .string()
+        .min(1, { message: 'Present address is required' })
+        .optional(),
+      permanentAddress: z
+        .string()
+        .min(1, { message: 'Permanent address is required' })
+        .optional(),
+      guardian: guardianValidationUpdateSchema,
+      localGuardian: localGuardianValidationUpdateSchema,
+      profileImg: z.string().optional(),
+      admissionSemester: z.string().optional(),
+    }),
+  }),
+});
+
+export { studentValidationSchema, studentValidationUpdateSchema };
