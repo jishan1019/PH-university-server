@@ -1,3 +1,5 @@
+import httpStatus from 'http-status';
+import AppError from '../../errors/AppError';
 import { TAcademicFaculty } from './academicFaculty.interface';
 import { AcademicFacultyModel } from './academicFaculty.model';
 
@@ -21,7 +23,10 @@ const updateAcademicFacultyIntoDb = async (
   payload: TAcademicFaculty,
 ) => {
   if (!id) {
-    throw new Error('Please provide academic faculty id');
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Please provide academic faculty id',
+    );
   }
 
   const result = await AcademicFacultyModel.updateOne(
