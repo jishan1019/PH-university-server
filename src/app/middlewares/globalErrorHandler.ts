@@ -3,6 +3,7 @@ import { ZodError, ZodIssue } from 'zod';
 import { TErrorSource } from '../interface/globalErrorStatus.interface';
 import config from '../config';
 import handelZodError from '../errors/handelZodError';
+import handelMongooseError from '../errors/handelMongooseError';
 
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   //default status code
@@ -18,6 +19,12 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
 
   if (err instanceof ZodError) {
     const simplifiedError = handelZodError(err);
+
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorSource = simplifiedError.errorSource;
+  } else if (err?.name === 'ValidationError') {
+    const simplifiedError = handelMongooseError(err);
 
     statusCode = simplifiedError.statusCode;
     message = simplifiedError.message;
