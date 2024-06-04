@@ -4,6 +4,8 @@ import { TErrorSource } from '../interface/globalErrorStatus.interface';
 import config from '../config';
 import handelZodError from '../errors/handelZodError';
 import handelMongooseError from '../errors/handelMongooseError';
+import handelCastError from '../errors/handelCastError';
+import handelDuplicateKeyError from '../errors/handelDuplicateKeyError';
 
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   //default status code
@@ -25,6 +27,18 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     errorSource = simplifiedError.errorSource;
   } else if (err?.name === 'ValidationError') {
     const simplifiedError = handelMongooseError(err);
+
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorSource = simplifiedError.errorSource;
+  } else if (err?.name === 'CastError') {
+    const simplifiedError = handelCastError(err);
+
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorSource = simplifiedError.errorSource;
+  } else if (err?.code == 11000) {
+    const simplifiedError = handelDuplicateKeyError(err);
 
     statusCode = simplifiedError.statusCode;
     message = simplifiedError.message;
