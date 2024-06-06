@@ -28,6 +28,7 @@ const getAllStudentsFromDb = async (query: Record<string, unknown>) => {
         path: 'academicFaculty',
       },
     });
+
   return result;
 };
 

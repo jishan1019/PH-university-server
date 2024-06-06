@@ -60,6 +60,7 @@ const studentValidationSchema = z.object({
       localGuardian: localGuardianValidationSchema,
       profileImg: z.string().optional(),
       admissionSemester: z.string(),
+      academicDepartment: z.string(),
     }),
   }),
 });
@@ -151,6 +152,7 @@ const studentValidationUpdateSchema = z.object({
       localGuardian: localGuardianValidationUpdateSchema,
       profileImg: z.string().optional(),
       admissionSemester: z.string().optional(),
+      academicDepartment: z.string().optional(),
     }),
   }),
 });
