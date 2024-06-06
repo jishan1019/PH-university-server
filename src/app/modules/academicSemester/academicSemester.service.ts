@@ -17,7 +17,10 @@ const getSingleAcademicSemesterFromDb = async (id: string) => {
 const createAcademicSemesterIntoDb = async (payload: TAcademicSemester) => {
   //semester name ---> semester code
 
-  if (academicSemesterNameCodeMapper[payload.name] !== payload.name) {
+  const semesterCode = academicSemesterNameCodeMapper[payload.name];
+  const payloadSemesterCode = payload.code;
+
+  if (semesterCode !== payloadSemesterCode) {
     throw new AppError(httpStatus.NOT_FOUND, 'Invalid Semester Code');
   }
 

@@ -13,13 +13,17 @@ import httpStatus from 'http-status';
 const createStudentIntoDb = async (password: string, payload: TStudent) => {
   const userData: Partial<TUser> = {};
 
+  userData.password = password || (config.default_pass as string);
+  userData.role = 'student';
+
   //find academic semester info
   const admissionSemester = await AcademicSemesterModel.findById(
     payload.admissionSemester,
   );
 
-  userData.password = password || (config.default_pass as string);
-  userData.role = 'student';
+  if (!admissionSemester) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Admission semester not found');
+  }
 
   const session = await mongoose.startSession();
 
@@ -27,9 +31,7 @@ const createStudentIntoDb = async (password: string, payload: TStudent) => {
     //start session
     session.startTransaction();
 
-    userData.id = await generateStudentId(
-      admissionSemester as TAcademicSemester,
-    );
+    userData.id = await generateStudentId(admissionSemester);
 
     //session (transaction - 1)
     const newUser = await UserModel.create([userData], { session });
@@ -55,11 +57,11 @@ const createStudentIntoDb = async (password: string, payload: TStudent) => {
     await session.endSession();
 
     return newStudent;
-  } catch (error) {
+  } catch (error: any) {
     await session.abortTransaction();
     await session.endSession();
 
-    throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create user');
+    throw new AppError(httpStatus.BAD_REQUEST, error);
   }
 };
 
