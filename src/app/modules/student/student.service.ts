@@ -9,8 +9,8 @@ import { TStudent } from './student.interface';
 const getAllStudentsFromDb = async (query: Record<string, unknown>) => {
   const queryObj = { ...query }; //copy original
   const studentSearchableFields = ['email', 'name.firstName', 'presentAddress'];
-  let searchTerm = '';
 
+  let searchTerm = '';
   if (query?.searchTerm) {
     searchTerm = query?.searchTerm as string;
   }
@@ -25,11 +25,9 @@ const getAllStudentsFromDb = async (query: Record<string, unknown>) => {
   });
 
   //filtering
-  const excludedFields = ['searchTerm'];
-
+  const excludedFields = ['searchTerm', 'sort', 'limit'];
   excludedFields?.forEach((el) => delete queryObj[el]);
-
-  const result = await searchQuery
+  const filterQuery = searchQuery
     .find(queryObj)
     .populate('admissionSemester')
     .populate({
@@ -39,7 +37,18 @@ const getAllStudentsFromDb = async (query: Record<string, unknown>) => {
       },
     });
 
-  return result;
+  let sort = '-createdAt';
+  if (query.sort) {
+    sort = query.sort as string;
+  }
+  const sortQuery = await filterQuery.sort(sort);
+
+  let limit = 1;
+  if (query.limit) {
+    limit = query.limit as number;
+  }
+
+  return sortQuery;
 };
 
 const getSingleStudentFromDb = async (id: string) => {
