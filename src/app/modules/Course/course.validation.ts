@@ -19,7 +19,9 @@ const courseValidationSchema = z.object({
     credits: z.number({
       invalid_type_error: 'credits must be number',
     }),
-    preRequisiteCourses: z.array(preRequisiteCoursesValidationSchema),
+    preRequisiteCourses: z
+      .array(preRequisiteCoursesValidationSchema)
+      .optional(),
   }),
 });
 
