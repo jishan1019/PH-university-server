@@ -22,7 +22,42 @@ const courseValidationSchema = z.object({
     preRequisiteCourses: z
       .array(preRequisiteCoursesValidationSchema)
       .optional(),
+    isDeleted: z.boolean().optional(),
   }),
 });
 
-export { courseValidationSchema };
+const updatePreRequisiteCoursesValidationSchema = z.object({
+  course: z.string().optional(),
+  isDeleted: z.boolean().optional(),
+});
+
+const updateCourseValidationSchema = z.object({
+  body: z.object({
+    title: z
+      .string({
+        invalid_type_error: 'title must be string',
+      })
+      .optional(),
+    prefix: z
+      .string({
+        invalid_type_error: 'prefix must be string',
+      })
+      .optional(),
+    code: z
+      .number({
+        invalid_type_error: 'prefix must be number',
+      })
+      .optional(),
+    credits: z
+      .number({
+        invalid_type_error: 'credits must be number',
+      })
+      .optional(),
+    preRequisiteCourses: z
+      .array(updatePreRequisiteCoursesValidationSchema)
+      .optional(),
+    isDeleted: z.boolean().optional(),
+  }),
+});
+
+export { courseValidationSchema, updateCourseValidationSchema };
