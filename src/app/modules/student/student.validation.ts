@@ -42,7 +42,7 @@ const studentValidationSchema = z.object({
     password: z.string().max(20),
     student: z.object({
       name: userNameValidationSchema,
-      gender: z.enum(['male', 'female']),
+      gender: z.enum(['male', 'female', 'other']),
       dateOfBirth: z.string().optional(),
       email: z.string().email({ message: 'Invalid email address' }),
       contactNo: z.string().min(1, { message: 'Contact number is required' }),
@@ -126,7 +126,7 @@ const studentValidationUpdateSchema = z.object({
     password: z.string().max(20).optional(),
     student: z.object({
       name: userNameValidationUpdateSchema,
-      gender: z.enum(['male', 'female']).optional(),
+      gender: z.enum(['male', 'female', 'other']).optional(),
       dateOfBirth: z.string().optional(),
       email: z.string().email({ message: 'Invalid email address' }).optional(),
       contactNo: z

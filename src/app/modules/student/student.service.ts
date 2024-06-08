@@ -71,11 +71,22 @@ const getAllStudentsFromDb = async (query: Record<string, unknown>) => {
 
   // const fieldsQuery = await limitQuery.select(fields);
 
-  const studentQuery = new QueryBuilder(StudentModel.find(), query)
+  const studentQuery = new QueryBuilder(
+    StudentModel.find()
+      .populate('admissionSemester')
+      .populate({
+        path: 'academicDepartment',
+        populate: {
+          path: 'academicFaculty',
+        },
+      }),
+    query,
+  )
     .search(studentSearchableFields)
     .filter()
     .sort()
-    .paginate();
+    .paginate()
+    .fields();
 
   const result = await studentQuery.modelQuery;
 
@@ -83,7 +94,7 @@ const getAllStudentsFromDb = async (query: Record<string, unknown>) => {
 };
 
 const getSingleStudentFromDb = async (id: string) => {
-  const result = await StudentModel.findOne({ id })
+  const result = await StudentModel.findById({ id })
     .populate('admissionSemester')
     .populate({
       path: 'academicDepartment',
@@ -119,11 +130,10 @@ const updateStudentFromDb = async (id: string, payload: Partial<TStudent>) => {
     }
   }
 
-  const result = await StudentModel.findOneAndUpdate(
-    { id },
-    modifiedUpdatedData,
-    { new: true, runValidators: true },
-  );
+  const result = await StudentModel.findByIdAndUpdate(id, modifiedUpdatedData, {
+    new: true,
+    runValidators: true,
+  });
 
   return result;
 };
@@ -140,8 +150,8 @@ const deleteStudentFromDb = async (id: string) => {
   try {
     session.startTransaction();
 
-    const deletedStudent = await StudentModel.findOneAndUpdate(
-      { id },
+    const deletedStudent = await StudentModel.findByIdAndUpdate(
+      id,
       { isDeleted: true },
       { new: true, session },
     );
@@ -150,8 +160,10 @@ const deleteStudentFromDb = async (id: string) => {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete student');
     }
 
-    const deletedUser = await UserModel.findOneAndUpdate(
-      { id },
+    const userId = deletedStudent.user;
+
+    const deletedUser = await UserModel.findByIdAndUpdate(
+      userId,
       { isDeleted: true },
       { new: true, session },
     );
