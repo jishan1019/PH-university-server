@@ -4,6 +4,7 @@ import { AcademicSemesterModel } from '../academicSemester/academicSemester.mode
 import { TSemesterRegistration } from './semesterRegistration.interface';
 import { SemesterRegistrationModel } from './semesterRegistration.model';
 import QueryBuilder from '../../builder/QueryBuilder';
+import { RegistrationStatus } from './semesterRegistration.constant';
 
 const getAllSemesterRegistrationFromDb = async (
   query: Record<string, unknown>,
@@ -47,7 +48,10 @@ const createSemesterRegistrationIntoDb = async (
   //check any upcoming or ongoing semesters already exist
   const isThereAnyUpcomingOrOngoingSemester =
     await SemesterRegistrationModel.findOne({
-      $or: [{ status: 'UPCOMING' }, { status: 'ONGOING' }],
+      $or: [
+        { status: RegistrationStatus.UPCOMING },
+        { status: RegistrationStatus.ONGOING },
+      ],
     });
   if (isThereAnyUpcomingOrOngoingSemester) {
     throw new AppError(
@@ -74,7 +78,56 @@ const createSemesterRegistrationIntoDb = async (
 const updateSemesterRegistrationFromDb = async (
   id: string,
   payload: Partial<TSemesterRegistration>,
-) => {};
+) => {
+  //check if the semester has exist
+  const isSemesterRegelationExist =
+    await SemesterRegistrationModel.findById(id);
+
+  if (!isSemesterRegelationExist) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'This Semester Regelation is not exist',
+    );
+  }
+
+  const currentSemesterStatus = isSemesterRegelationExist?.status;
+  const reqSemesterStatus = payload?.status;
+
+  if (currentSemesterStatus === RegistrationStatus.ENDED) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'This semester is already ENDED',
+    );
+  }
+
+  if (
+    currentSemesterStatus === RegistrationStatus.UPCOMING &&
+    reqSemesterStatus === RegistrationStatus.ENDED
+  ) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Cannot update status direct UPCOMING to ENDED',
+    );
+  }
+
+  if (
+    currentSemesterStatus === RegistrationStatus.ONGOING &&
+    reqSemesterStatus === RegistrationStatus.UPCOMING
+  ) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Cannot update status ONGOING to UPCOMING',
+    );
+  }
+
+  const result = await SemesterRegistrationModel.findByIdAndUpdate(
+    id,
+    payload,
+    { new: true, runValidators: true },
+  );
+
+  return result;
+};
 
 export const SemesterRegistrationService = {
   getAllSemesterRegistrationFromDb,
