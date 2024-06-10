@@ -1,12 +1,15 @@
 import { z } from 'zod';
+import { semesterRegistrationStatus } from './semesterRegistration.constant';
 
 const semesterRegistrationValidationSchema = z.object({
-  password: z
-    .string({
-      invalid_type_error: 'Password must be string',
-    })
-    .max(20, { message: 'Password can not be more then 20 character' })
-    .optional(),
+  body: z.object({
+    academicSemester: z.string(),
+    status: z.enum([...semesterRegistrationStatus] as [string, ...string[]]),
+    startDate: z.string().datetime(),
+    endDate: z.string().datetime(),
+    minCredit: z.number(),
+    maxCredit: z.number(),
+  }),
 });
 
 export { semesterRegistrationValidationSchema };

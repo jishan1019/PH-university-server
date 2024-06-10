@@ -3,6 +3,11 @@ import { SemesterRegistrationController } from './semesterRegistration.controlle
 
 const router = express.Router();
 
-router.post('/create-student', SemesterRegistrationController.createStudent);
+router.get('/', SemesterRegistrationController.getAllSemesterRegistration);
+router.get(
+  '/:id',
+  SemesterRegistrationController.getSingleSemesterRegistration,
+);
+router.post('/', SemesterRegistrationController.createSemesterRegistration);
 
 export const SemesterRegistrationRoutes = router;
