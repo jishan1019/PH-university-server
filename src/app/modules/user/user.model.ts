@@ -1,8 +1,8 @@
 import { Schema, model } from 'mongoose';
-import { TUser } from './user.interface';
+import { TUser, TUserModel } from './user.interface';
 import argon2 from 'argon2';
 
-const userSchema = new Schema<TUser>(
+const userSchema = new Schema<TUser, TUserModel>(
   {
     id: { type: String, required: true, unique: true },
     password: { type: String, required: true },
@@ -39,6 +39,14 @@ userSchema.post('save', function (user, next) {
   next();
 });
 
-const UserModel = model<TUser>('User', userSchema);
+userSchema.statics.isUserExistsByCustomId = async function (id: string) {
+  return await this.findOne({ id });
+};
+
+userSchema.statics.isPasswordMatch = async function (dbUserPass, payloadPass) {
+  return await argon2.verify(dbUserPass, payloadPass);
+};
+
+const UserModel = model<TUser, TUserModel>('User', userSchema);
 
 export { UserModel };
