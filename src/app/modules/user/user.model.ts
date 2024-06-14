@@ -5,7 +5,7 @@ import argon2 from 'argon2';
 const userSchema = new Schema<TUser, TUserModel>(
   {
     id: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password: { type: String, required: true, select: 0 },
     needsPasswordChange: { type: Boolean, default: true },
     role: { type: String, enum: ['admin', 'student', 'faculty'] },
     status: {
@@ -40,7 +40,7 @@ userSchema.post('save', function (user, next) {
 });
 
 userSchema.statics.isUserExistsByCustomId = async function (id: string) {
-  return await this.findOne({ id });
+  return await this.findOne({ id }).select('+password');
 };
 
 userSchema.statics.isPasswordMatch = async function (dbUserPass, payloadPass) {
