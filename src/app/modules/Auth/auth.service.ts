@@ -92,7 +92,11 @@ const changePassUserFromDb = async (
       id: userData?.userId,
       role: userData?.role,
     },
-    { password: hashNewPassword, needsPasswordChange: false },
+    {
+      password: hashNewPassword,
+      needsPasswordChange: false,
+      passwordChangeAt: new Date(),
+    },
     { new: true, runValidators: true },
   );
 
