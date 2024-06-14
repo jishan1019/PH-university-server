@@ -3,7 +3,6 @@ import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { OfferedCourseServices } from './offerCourse.service';
-';
 
 const createOfferedCourse = catchAsync(async (req: Request, res: Response) => {
   const result = await OfferedCourseServices.createOfferedCourseIntoDB(
@@ -18,27 +17,29 @@ const createOfferedCourse = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllOfferedCourses = catchAsync(async (req: Request, res: Response) => {
-    const result = await OfferedCourseServices.getAllOfferedCoursesFromDB(req.query)
+  const result = await OfferedCourseServices.getAllOfferedCoursesFromDB(
+    req.query,
+  );
 
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'OfferedCourses retrieved successfully !',
-      data: result,
-    });
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'OfferedCourses retrieved successfully !',
+    data: result,
+  });
 });
 
 const getSingleOfferedCourses = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.params;
-      const result = OfferedCourseServices.getSingleOfferedCourseFromDB(id)
+    const result = OfferedCourseServices.getSingleOfferedCourseFromDB(id);
 
-      sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: 'OfferedCourse fetched successfully',
-        data: result,
-      });
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'OfferedCourse fetched successfully',
+      data: result,
+    });
   },
 );
 
