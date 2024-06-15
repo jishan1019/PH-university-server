@@ -48,6 +48,17 @@ userSchema.statics.isPasswordMatch = async function (dbUserPass, payloadPass) {
   return await argon2.verify(dbUserPass, payloadPass);
 };
 
+userSchema.statics.isJwtIssueBeforePassChange = function (
+  passChangeTimestamp: Date,
+  jwtIssueTimestamp: number,
+) {
+  const passChangeTime = new Date(passChangeTimestamp).getTime() / 1000;
+
+  const comparTime = passChangeTime > jwtIssueTimestamp;
+
+  return comparTime;
+};
+
 const UserModel = model<TUser, TUserModel>('User', userSchema);
 
 export { UserModel };

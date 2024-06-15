@@ -6,17 +6,21 @@ import {
   coursesFacultyValidationSchema,
   updateCourseValidationSchema,
 } from './course.validation';
+import auth from '../../middlewares/auth';
+import { USER_ROLE } from '../user/user.constant';
 const router = express.Router();
 
 router.get('/', CourseController.getAllCourses);
 router.get('/:id', CourseController.getSingleCourses);
 router.post(
   '/',
+  auth(USER_ROLE.admin),
   validateRequest(courseValidationSchema),
   CourseController.createCourse,
 );
 router.patch(
   '/:id',
+  auth(USER_ROLE.admin),
   validateRequest(updateCourseValidationSchema),
   CourseController.updateCourse,
 );
@@ -29,6 +33,7 @@ router.put(
 
 router.delete(
   '/remove-faculties/:courseId',
+  auth(USER_ROLE.admin),
   validateRequest(coursesFacultyValidationSchema),
   CourseController.deleteFacultiesCourse,
 );

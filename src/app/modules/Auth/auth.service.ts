@@ -5,6 +5,7 @@ import { TLoginUser } from './auth.interface';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../../config';
 import argon2 from 'argon2';
+import { createToken } from './auth.utils';
 
 const loginUserFromDb = async (payload: TLoginUser) => {
   const user = await UserModel.isUserExistsByCustomId(payload?.id);
@@ -40,13 +41,67 @@ const loginUserFromDb = async (payload: TLoginUser) => {
     role: user.role,
   };
 
-  const accessToken = jwt.sign(jwtPayload, config.jwt_secret as string, {
-    expiresIn: '10d',
-  });
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_secret as string,
+    config.jwt_access_expire_time as string,
+  );
+
+  const refreshToken = createToken(
+    jwtPayload,
+    config.jwt_refresh_secret as string,
+    config.jwt_refresh_expire_time as string,
+  );
 
   return {
     accessToken,
+    refreshToken,
     needsPasswordChange: user?.needsPasswordChange,
+  };
+};
+
+const generateNewRefreshToken = async (token: string) => {
+  const decoded = jwt.verify(
+    token,
+    config.jwt_refresh_secret as string,
+  ) as JwtPayload;
+
+  const { userId, iat } = decoded;
+
+  const user = await UserModel.isUserExistsByCustomId(userId);
+
+  const isDeleted = user?.isDeleted;
+  if (isDeleted) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This User is deleted');
+  }
+
+  const userStatus = user?.status;
+  if (userStatus === 'blocked') {
+    throw new AppError(httpStatus.NOT_FOUND, 'This User is Blocked');
+  }
+
+  const isPassChangeBeforeJwtIssue = UserModel.isJwtIssueBeforePassChange(
+    user?.passwordChangeAt as Date,
+    iat as number,
+  );
+
+  if (user?.passwordChangeAt && isPassChangeBeforeJwtIssue) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized');
+  }
+
+  const jwtPayload = {
+    userId: user?.id,
+    role: user.role,
+  };
+
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_secret as string,
+    config.jwt_access_expire_time as string,
+  );
+
+  return {
+    accessToken,
   };
 };
 
@@ -105,5 +160,6 @@ const changePassUserFromDb = async (
 
 export const AuthServices = {
   loginUserFromDb,
+  generateNewRefreshToken,
   changePassUserFromDb,
 };

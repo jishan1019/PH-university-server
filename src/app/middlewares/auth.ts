@@ -38,9 +38,19 @@ const auth = (...requiredRole: TUserRole[]) => {
       throw new AppError(httpStatus.NOT_FOUND, 'This User is Blocked');
     }
 
+    const isPassChangeBeforeJwtIssue = UserModel.isJwtIssueBeforePassChange(
+      user?.passwordChangeAt as Date,
+      iat as number,
+    );
+
+    if (user?.passwordChangeAt && isPassChangeBeforeJwtIssue) {
+      throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized');
+    }
+
     if (requiredRole && !requiredRole.includes(role)) {
       throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized');
     }
+
     req.user = decoded as JwtPayload;
     next();
   });

@@ -3,6 +3,7 @@ import validateRequest from '../../middlewares/validateRequest';
 import {
   changePassValidationSchema,
   loginValidationSchema,
+  refreshTokenValidationSchema,
 } from './auth.validation';
 import { AuthController } from './auth.controller';
 import auth from '../../middlewares/auth';
@@ -14,6 +15,12 @@ router.post(
   '/login',
   validateRequest(loginValidationSchema),
   AuthController.loginUser,
+);
+
+router.post(
+  '/refresh-token',
+  validateRequest(refreshTokenValidationSchema),
+  AuthController.refreshToken,
 );
 
 router.post(

@@ -13,4 +13,8 @@ export interface TUser {
 export interface TUserModel extends Model<TUser> {
   isUserExistsByCustomId(id: string): Promise<TUser>;
   isPasswordMatch(dbUserPass: string, payloadPass: string): Promise<boolean>;
+  isJwtIssueBeforePassChange(
+    passChangeTimestamp: Date,
+    jwtIssueTimestamp: number,
+  ): boolean;
 }
