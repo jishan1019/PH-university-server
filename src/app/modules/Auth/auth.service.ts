@@ -6,6 +6,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../../config';
 import argon2 from 'argon2';
 import { createToken } from './auth.utils';
+import { sendEmail } from '../../utils/sendEmail';
 
 const loginUserFromDb = async (payload: TLoginUser) => {
   const user = await UserModel.isUserExistsByCustomId(payload?.id);
@@ -105,6 +106,41 @@ const generateNewRefreshToken = async (token: string) => {
   };
 };
 
+const forgetUserPassword = async (userId: string) => {
+  const user = await UserModel.isUserExistsByCustomId(userId);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  const isDeleted = user?.isDeleted;
+  if (isDeleted) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This User is deleted');
+  }
+
+  const userStatus = user?.status;
+  if (userStatus === 'blocked') {
+    throw new AppError(httpStatus.NOT_FOUND, 'This User is Blocked');
+  }
+
+  const jwtPayload = {
+    userId: user?.id,
+    role: user.role,
+  };
+
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_secret as string,
+    config.forget_pass_expire_time as string,
+  );
+
+  const resetLink = `${config.frontend_base_url}?id=${user.id}&token=${accessToken}`;
+
+  sendEmail(user.email, resetLink);
+
+  return 'Email sent successfully';
+};
+
 const changePassUserFromDb = async (
   userData: JwtPayload,
   payload: {
@@ -161,5 +197,6 @@ const changePassUserFromDb = async (
 export const AuthServices = {
   loginUserFromDb,
   generateNewRefreshToken,
+  forgetUserPassword,
   changePassUserFromDb,
 };

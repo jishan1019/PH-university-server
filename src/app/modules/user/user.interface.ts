@@ -3,6 +3,7 @@ import { Model, Document } from 'mongoose';
 export interface TUser {
   id: string;
   password: string;
+  email: string;
   passwordChangeAt?: Date;
   needsPasswordChange: boolean;
   role: 'admin' | 'student' | 'faculty';

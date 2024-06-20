@@ -6,6 +6,7 @@ const userSchema = new Schema<TUser, TUserModel>(
   {
     id: { type: String, required: true, unique: true },
     password: { type: String, required: true, select: 0 },
+    email: { type: String, required: true, unique: true },
     passwordChangeAt: { type: Date },
     needsPasswordChange: { type: Boolean, default: true },
     role: { type: String, enum: ['admin', 'student', 'faculty'] },
@@ -29,9 +30,7 @@ userSchema.pre('save', async function (next) {
     user.password = hash;
 
     next();
-  } catch (err) {
-    console.log(err);
-  }
+  } catch (err) {}
 });
 
 //post middleware
@@ -41,6 +40,8 @@ userSchema.post('save', function (user, next) {
 });
 
 userSchema.statics.isUserExistsByCustomId = async function (id: string) {
+  console.log(id);
+
   return await this.findOne({ id }).select('+password');
 };
 
