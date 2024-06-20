@@ -5,6 +5,7 @@ import {
   forgetPasswordValidationSchema,
   loginValidationSchema,
   refreshTokenValidationSchema,
+  resetPasswordValidationSchema,
 } from './auth.validation';
 import { AuthController } from './auth.controller';
 import auth from '../../middlewares/auth';
@@ -35,6 +36,12 @@ router.post(
   '/forget-password',
   validateRequest(forgetPasswordValidationSchema),
   AuthController.forgetPassword,
+);
+
+router.post(
+  '/reset-password',
+  validateRequest(resetPasswordValidationSchema),
+  AuthController.resetPassword,
 );
 
 export const AuthRoutes = router;

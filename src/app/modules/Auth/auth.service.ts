@@ -194,9 +194,54 @@ const changePassUserFromDb = async (
   return null;
 };
 
+const resetUserPassword = async (
+  payload: { id: string; newPassword: string },
+  token: string,
+) => {
+  const user = await UserModel.isUserExistsByCustomId(payload?.id);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  const isDeleted = user?.isDeleted;
+  if (isDeleted) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This User is deleted');
+  }
+
+  const userStatus = user?.status;
+  if (userStatus === 'blocked') {
+    throw new AppError(httpStatus.NOT_FOUND, 'This User is Blocked');
+  }
+
+  const decoded = jwt.verify(token, config.jwt_secret as string) as JwtPayload;
+
+  if (decoded?.userId !== payload.id) {
+    throw new AppError(httpStatus.FORBIDDEN, 'This User is forbidden.');
+  }
+
+  const hashNewPassword = await argon2.hash(payload?.newPassword);
+
+  const result = await UserModel.findOneAndUpdate(
+    {
+      id: decoded?.userId,
+      role: decoded?.role,
+    },
+    {
+      password: hashNewPassword,
+      needsPasswordChange: false,
+      passwordChangeAt: new Date(),
+    },
+    { new: true, runValidators: true },
+  );
+
+  return null;
+};
+
 export const AuthServices = {
   loginUserFromDb,
   generateNewRefreshToken,
   forgetUserPassword,
   changePassUserFromDb,
+  resetUserPassword,
 };
