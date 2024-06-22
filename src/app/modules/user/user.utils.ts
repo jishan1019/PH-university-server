@@ -1,5 +1,6 @@
 import { TAcademicSemester } from '../academicSemester/academicSemester.interface';
 import { UserModel } from './user.model';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 const findLastStudentId = async () => {
   const lastStudent = await UserModel.findOne(
@@ -102,4 +103,10 @@ export const generateAdminId = async () => {
 
   incrementId = `A-${incrementId}`;
   return incrementId;
+};
+
+export const verifyToken = (token: string, secret: string) => {
+  const decoded = jwt.verify(token, secret) as JwtPayload;
+
+  return decoded;
 };

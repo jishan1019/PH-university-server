@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import config from '../../config';
-import { TAcademicSemester } from '../academicSemester/academicSemester.interface';
 import { AcademicSemesterModel } from '../academicSemester/academicSemester.model';
 import { TStudent } from '../student/student.interface';
 import { StudentModel } from '../student/student.model';
@@ -10,6 +9,7 @@ import {
   generateAdminId,
   generateFacultyId,
   generateStudentId,
+  verifyToken,
 } from './user.utils';
 import AppError from '../../errors/AppError';
 import httpStatus from 'http-status';
@@ -18,6 +18,7 @@ import { AcademicDepartmentModel } from '../academicDepartment/academicDepartmen
 import { FacultyModel } from '../Faculty/faculty.model';
 import { AdminModel } from '../Admin/admin.model';
 import { TAdmin } from '../Admin/admin.interface';
+import { USER_ROLE } from './user.constant';
 
 const createStudentIntoDb = async (password: string, payload: TStudent) => {
   const userData: Partial<TUser> = {};
@@ -181,8 +182,30 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
   }
 };
 
+const getMeFromDb = async (userId: string, role: string) => {
+  let result = null;
+
+  if (role === USER_ROLE.student) {
+    result = await StudentModel.findOne({ id: userId }).populate('user');
+  } else if (role === USER_ROLE.admin) {
+    result = await AdminModel.findOne({ id: userId }).populate('user');
+  } else if (role === USER_ROLE.faculty) {
+    result = await FacultyModel.findOne({ id: userId }).populate('user');
+  }
+
+  return result;
+};
+
+const changeStatusFromDb = async (id: string, payload: { status: string }) => {
+  const result = UserModel.findByIdAndUpdate(id, payload, { new: true });
+
+  return result;
+};
+
 export const UserServices = {
   createStudentIntoDb,
   createFacultyIntoDB,
   createAdminIntoDB,
+  getMeFromDb,
+  changeStatusFromDb,
 };

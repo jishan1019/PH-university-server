@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
 import { TUser, TUserModel } from './user.interface';
 import argon2 from 'argon2';
+import { USER_STATUS } from './user.constant';
 
 const userSchema = new Schema<TUser, TUserModel>(
   {
@@ -12,7 +13,7 @@ const userSchema = new Schema<TUser, TUserModel>(
     role: { type: String, enum: ['admin', 'student', 'faculty'] },
     status: {
       type: String,
-      enum: ['in-progress', 'blocked'],
+      enum: USER_STATUS,
       default: 'in-progress',
     },
     isDeleted: { type: Boolean, default: false },
@@ -40,8 +41,6 @@ userSchema.post('save', function (user, next) {
 });
 
 userSchema.statics.isUserExistsByCustomId = async function (id: string) {
-  console.log(id);
-
   return await this.findOne({ id }).select('+password');
 };
 

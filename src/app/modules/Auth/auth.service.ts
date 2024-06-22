@@ -7,6 +7,7 @@ import config from '../../config';
 import argon2 from 'argon2';
 import { createToken } from './auth.utils';
 import { sendEmail } from '../../utils/sendEmail';
+import { verifyToken } from '../user/user.utils';
 
 const loginUserFromDb = async (payload: TLoginUser) => {
   const user = await UserModel.isUserExistsByCustomId(payload?.id);
@@ -62,10 +63,7 @@ const loginUserFromDb = async (payload: TLoginUser) => {
 };
 
 const generateNewRefreshToken = async (token: string) => {
-  const decoded = jwt.verify(
-    token,
-    config.jwt_refresh_secret as string,
-  ) as JwtPayload;
+  const decoded = verifyToken(token, config.jwt_refresh_secret as string);
 
   const { userId, iat } = decoded;
 
@@ -214,7 +212,7 @@ const resetUserPassword = async (
     throw new AppError(httpStatus.NOT_FOUND, 'This User is Blocked');
   }
 
-  const decoded = jwt.verify(token, config.jwt_secret as string) as JwtPayload;
+  const decoded = verifyToken(token, config.jwt_secret as string);
 
   if (decoded?.userId !== payload.id) {
     throw new AppError(httpStatus.FORBIDDEN, 'This User is forbidden.');
