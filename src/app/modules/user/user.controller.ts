@@ -4,9 +4,14 @@ import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
 
 const createStudent = catchAsync(async (req, res) => {
+  const file = req.file;
   const { password, student: studentData } = req.body;
 
-  const result = await UserServices.createStudentIntoDb(password, studentData);
+  const result = await UserServices.createStudentIntoDb(
+    file,
+    password,
+    studentData,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

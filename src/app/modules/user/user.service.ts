@@ -19,8 +19,13 @@ import { FacultyModel } from '../Faculty/faculty.model';
 import { AdminModel } from '../Admin/admin.model';
 import { TAdmin } from '../Admin/admin.interface';
 import { USER_ROLE } from './user.constant';
+import { sendImgToCloudinary } from '../../utils/sendImgToCloudinary';
 
-const createStudentIntoDb = async (password: string, payload: TStudent) => {
+const createStudentIntoDb = async (
+  file: any,
+  password: string,
+  payload: TStudent,
+) => {
   const userData: Partial<TUser> = {};
 
   userData.password = password || (config.default_pass as string);
@@ -41,18 +46,22 @@ const createStudentIntoDb = async (password: string, payload: TStudent) => {
   try {
     //start session
     session.startTransaction();
-
     userData.id = await generateStudentId(admissionSemester);
+
+    const imgName = `${userData?.id}${payload?.name?.firstName}`;
+    const path = file?.path;
+
+    const imgUploadResult = await sendImgToCloudinary(imgName, path);
 
     //session (transaction - 1)
     const newUser = await UserModel.create([userData], { session });
-
     if (!newUser.length) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create a new user');
     }
 
     payload.id = newUser[0].id; //embed id
     payload.user = newUser[0]._id; //reference id
+    payload.profileImg = imgUploadResult?.secure_url; //upload profile image
 
     //session (transaction - 2)
     const newStudent = await StudentModel.create([payload], { session });

@@ -14,5 +14,8 @@ export default {
   jwt_refresh_expire_time: process.env.JWT_REFRESH_EXPIRE_TIME,
   forget_pass_expire_time: process.env.FORGET_PASS_EXPIRE_TIME,
   frontend_base_url: process.env.FRONTEND_BASE_URL,
+  cloudinary_cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
+  cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
 };
 3;
