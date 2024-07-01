@@ -1,45 +1,70 @@
-## Startup-backend-server template
+# PH-UNIVERSITY-SERVER
 
-Upcoming Details......
+The University Management System is a robust backend application designed to streamline university operations. Key functionalities include:
 
-## Template Features
+- Developed a robust backend for a University Management System using Node.js, Express, TypeScript, and Mongoose.
+- Implemented role-based authentication for Admin, Super Admin, Faculty, and Students.
+- Ensured secure access with JWT, allowing only original users to access their data.
+- Created password reset functionality with email notifications using Nodemailer.
+- Integrated profile picture upload and management using Multer and Cloudinary.
+- Designed and implemented a global error handling system covering Zod, Mongoose, and other errors.
+- Managed multiple data write operations with transaction and rollback mechanisms.
+- Developed course and faculty management systems, including department-specific course creation and faculty assignments.
+- Enabled academic semester registration and comprehensive student result management.
+- Implemented seasonal enrollment systems for Summer, Autumn, and Fall sessions.
+- Created a user ID generation system with unique session IDs for each enrollment period.
+- Built a secure and scalable server architecture with advanced search, sort, and filter capabilities for students, courses, departments, and faculty.
 
-- **Built-in analytics**
-- **Cross-browser compatibility**
+## Project Setup
 
-## Installation Guide (Local Setup)
+### Prerequisites
 
-To set up PH-UNIVERSITY locally on your machine, follow these simple steps:
+- Node.js (v14 or higher)
+- Yarn (v1.22 or higher)
+- MongoDB (v4.4 or higher)
 
-### Installation Steps
+### Installation
 
-1. **Clone the Repository**: Open your terminal and run the following command to clone the PH-UNIVERSITY repository:
+1. **Clone the repository:**
 
    ```
-   git clone https://github.com/jishan1019/PH-Uuniversity-Server.git
+   git clone https://github.com/jishan1019/Car-Rental-Shop-Assignment-3.git
+   cd ph-university-server
    ```
 
-2. **Navigate to the Project Directory**: Move into the project directory by running the following command:
-
-   ```
-   cd startapp-backend-server
-   ```
-
-3. **Install Dependencies**: Use yarn to install the project dependencies:
+2. **Install Necessary Dependency via command**
 
    ```
    yarn
    ```
 
-4. **Start the Development Server**: Once the dependencies are installed, start the development server by running:
+3. **Run Project via below command**
 
    ```
-   yarn dev
+   yarn start:dev
+   Project Running Port : http://localhost:4000
    ```
 
-5. **Access the Application**: You can now access Master Restaurant Frontend v2 by opening your web browser and navigating to `http://localhost:4000`.
+4. ** CREDENTIAL **
 
-6. **Manually Install Dependency**:You can manually install all the dependency via below commands.
+   ```
+   user:
+
+    {
+    "email": "user@gmail.com",
+    "password": "1234"
+    }
+
+   admin:
+
+   {
+    "email": "admin@gmail.com",
+    "password": "1234"
+   }
+
+   ```
+
+<!-- 6. **Manually Install Dependency**:You can manually install all the dependency via below commands.
 
    ```
    yarn add express mongoose cors dotenv zod argon2 cookie-parser
@@ -58,4 +83,4 @@ To set up PH-UNIVERSITY locally on your machine, follow these simple steps:
    tsc
    tsc -w
 
-   ```
+   ``` -->

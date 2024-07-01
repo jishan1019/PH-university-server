@@ -10,7 +10,7 @@ const userSchema = new Schema<TUser, TUserModel>(
     email: { type: String, required: true, unique: true },
     passwordChangeAt: { type: Date },
     needsPasswordChange: { type: Boolean, default: true },
-    role: { type: String, enum: ['admin', 'student', 'faculty'] },
+    role: { type: String, enum: ['superAdmin', 'admin', 'student', 'faculty'] },
     status: {
       type: String,
       enum: USER_STATUS,

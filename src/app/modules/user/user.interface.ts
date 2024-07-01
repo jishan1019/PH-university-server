@@ -1,4 +1,4 @@
-import { Model, Document } from 'mongoose';
+import { Model } from 'mongoose';
 
 export interface TUser {
   id: string;
@@ -6,7 +6,7 @@ export interface TUser {
   email: string;
   passwordChangeAt?: Date;
   needsPasswordChange: boolean;
-  role: 'admin' | 'student' | 'faculty';
+  role: 'admin' | 'student' | 'faculty' | 'superAdmin';
   status: 'in-progress' | 'blocked';
   isDeleted: boolean;
 }
