@@ -14,9 +14,10 @@ const createEnrolledCourseIntoDB = async (
   userId: string,
   payload: TEnrolledCourse,
 ) => {
-  const { offerCourse } = payload;
+  const { offeredCourse } = payload;
 
-  const isOfferCourseExist = await OfferedCourseModel.findById(offerCourse);
+  const isOfferCourseExist = await OfferedCourseModel.findById(offeredCourse);
+
   if (!isOfferCourseExist) {
     throw new AppError(httpStatus.NOT_FOUND, 'This offer Course not found');
   }
@@ -33,7 +34,7 @@ const createEnrolledCourseIntoDB = async (
 
   const isStudentAlreadyEnrolled = await EnrolledCourseModel.findOne({
     semesterRegistration: isOfferCourseExist?.semesterRegistration,
-    offerCourse,
+    offeredCourse,
     student: student._id,
   });
 
@@ -106,7 +107,7 @@ const createEnrolledCourseIntoDB = async (
           academicSemester: isOfferCourseExist.academicSemester,
           academicFaculty: isOfferCourseExist.academicFaculty,
           academicDepartment: isOfferCourseExist.academicDepartment,
-          offeredCourse: offerCourse,
+          offeredCourse: offeredCourse,
           course: isOfferCourseExist.course,
           student: student._id,
           faculty: isOfferCourseExist.faculty,
@@ -124,7 +125,7 @@ const createEnrolledCourseIntoDB = async (
     }
 
     const maxCapacity = isOfferCourseExist.maxCapacity;
-    await OfferedCourseModel.findByIdAndUpdate(offerCourse, {
+    await OfferedCourseModel.findByIdAndUpdate(offeredCourse, {
       maxCapacity: maxCapacity - 1,
     });
 

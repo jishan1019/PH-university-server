@@ -63,8 +63,9 @@ const createStudentIntoDb = async (
       const path = file?.path;
 
       //send image to cloudinary
-      const { secure_url } = await sendImgToCloudinary(imageName, path);
-      payload.profileImg = secure_url as string;
+      const result = await sendImgToCloudinary(imageName, path);
+
+      payload.profileImg = result?.secure_url as string;
     }
 
     //session (transaction - 1)
@@ -145,8 +146,8 @@ const createFacultyIntoDB = async (
       const path = file?.path;
 
       //send image to cloudinary
-      const { secure_url } = await sendImgToCloudinary(imageName, path);
-      payload.profileImg = secure_url as string;
+      const result = await sendImgToCloudinary(imageName, path);
+      payload.profileImg = result?.secure_url as string;
     }
 
     // set id , _id as user
@@ -208,8 +209,9 @@ const createAdminIntoDB = async (
       const path = file?.path;
 
       //send image to cloudinary
-      const { secure_url } = await sendImgToCloudinary(imageName, path);
-      payload.profileImg = secure_url as string;
+      const result = await sendImgToCloudinary(imageName, path);
+
+      payload.profileImg = result?.secure_url as string;
     }
 
     // set id , _id as user
